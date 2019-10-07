@@ -1,6 +1,4 @@
-import tensorflow as tf
 import numpy as np
-import pandas as pd
 import random
 from datetime import datetime
 
@@ -8,12 +6,6 @@ import matplotlib.pyplot as plt
 import cv2
 import pickle
 import sys, os
-
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.compat.v1.keras.layers import Dense, Flatten, Dropout, LSTM#, CuDNNLSTM
-from collections import deque
-from sklearn import preprocessing
-from tensorflow.keras.callbacks import TensorBoard
 from time import time
 from tqdm import tqdm
 
