@@ -9,7 +9,7 @@ import pickle
 import time, sys, os
 
 if len(sys.argv) != 3:
-	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/features (X)] [PATH/2/labels (y)] \n"
+	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/features (X)] [PATH/2/labels (y)]\n"
 	sys.exit()
 
 features = sys.argv[1]
@@ -21,12 +21,14 @@ conv_layers 	= [3]
 layer_sizes 	= [64,	256,	512,	1024	]
 """
 
+
+
 dense_layers 	= [0]
 conv_layers 	= [3]
 layer_sizes 	= [32, 64, 128, 256, 512, 1024]
 
 
-num_epoch = 10
+num_epoch = 15
 gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
 

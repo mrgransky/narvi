@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 if len(sys.argv) != 2:
 	print "\nSYNTAX: " + sys.argv[0] + " [PATH/2/DATASET]"
-	print "\n\nExample:\n\npython "+ sys.argv[0] + " /home/xenial/Datasets/Animals/Train\n"
+	print "\n\nExample: \n\npython " + sys.argv[0] + " /home/xenial/Datasets/Animals/Train\n"
 	sys.exit()
 
 DATADIR = sys.argv[1]
