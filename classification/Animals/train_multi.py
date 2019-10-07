@@ -6,7 +6,15 @@ from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras.callbacks import TensorBoard
 import pickle
-import time
+import time, sys, os
+
+if len(sys.argv) != 3:
+	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/features (X)] [PATH/2/labels (y)] \n"
+	sys.exit()
+
+features = sys.argv[1]
+labels = sys.argv[2]
+
 """
 dense_layers 	= [0]
 conv_layers 	= [3]
@@ -15,22 +23,22 @@ layer_sizes 	= [64,	256,	512,	1024	]
 
 dense_layers 	= [0]
 conv_layers 	= [3]
-layer_sizes 	= [64, 128, 256, 512, 1024]
+layer_sizes 	= [32, 64, 128, 256, 512, 1024]
 
 
-num_epoch = 10
+num_epoch = 1
 gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
 
-pickle_in = open("X.pickle","rb")
+pickle_in = open(str(features),"rb")
 X = pickle.load(pickle_in)
+
 print "\n\nX shape = ", X.shape[1:]
-pickle_in = open("y.pickle","rb")
+
+pickle_in = open(str(labels),"rb")
 y = pickle.load(pickle_in)
 
 X = X/255.0 # [0 - 1]
-
-Model_DIR = "/home/xenial/WS_Farid/keras_ws/classification/Animals/models"
 
 for dense_layer in dense_layers:
 	for layer_size in layer_sizes:
@@ -80,8 +88,6 @@ for dense_layer in dense_layers:
 			
 			if not os.path.exists(r'./models'):
 				os.mkdir(r'./models')
-			
-			#model.save(str(Model_DIR) + '/' + str(NAME) + '.model')
 			model.save(r'./models/' + str(NAME) + '.model')
 			
 			print("\nModel saved!")

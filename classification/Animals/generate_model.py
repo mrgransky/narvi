@@ -2,10 +2,12 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 import random
+from datetime import datetime
+
 import matplotlib.pyplot as plt
-import os
 import cv2
 import pickle
+import sys, os
 
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.compat.v1.keras.layers import Dense, Flatten, Dropout, LSTM#, CuDNNLSTM
@@ -15,9 +17,20 @@ from tensorflow.keras.callbacks import TensorBoard
 from time import time
 from tqdm import tqdm
 
-DATADIR = "/home/xenial/WS_Farid/keras_ws/classification/Animals/dataset"
+if len(sys.argv) != 2:
+	print "\nSYNTAX: " + sys.argv[0] + " [PATH/2/DATASET]"
+	print "\n\nExample:\n\npython "+ sys.argv[0] + " /home/xenial/Datasets/Animals/Train\n"
+	sys.exit()
+
+DATADIR = sys.argv[1]
+
 #CATEGORIES =["Dog", "Cat", "Panda"]
 CATEGORIES =["Dog", "Cat"]
+now = datetime.now() # current date and time
+date_time = now.strftime("%d%m%Y%H%M%S")
+print "\nTime:", date_time
+features = "X_{}".format(int(date_time))
+label = "y_{}".format(int(date_time))
 
 IMG_SIZE = 50
 training_data = []
@@ -59,11 +72,14 @@ for sample_, label_ in training_data:
 
 X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
 
-pickle_out = open("X.pickle", "wb")
+if not os.path.exists(r'./inp_out'):
+				os.mkdir(r'./inp_out')
+				
+pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
 pickle.dump(X, pickle_out)
 pickle_out.close()
 
-pickle_out = open("y.pickle", "wb")
+pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
 pickle.dump(y, pickle_out)
 pickle_out.close()
 
