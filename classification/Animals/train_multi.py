@@ -21,8 +21,6 @@ conv_layers 	= [3]
 layer_sizes 	= [64,	256,	512,	1024	]
 """
 
-
-
 dense_layers 	= [0]
 conv_layers 	= [3]
 layer_sizes 	= [32, 64, 128, 256, 512, 1024]

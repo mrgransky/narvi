@@ -21,8 +21,11 @@ CATEGORIES =["Dog", "Cat"]
 now = datetime.now() # current date and time
 date_time = now.strftime("%d%m%Y%H%M%S")
 print "\nTime:", date_time
-features = "X_{}".format(int(date_time))
-label = "y_{}".format(int(date_time))
+#features = "X_{}".format(int(date_time))
+#label = "y_{}".format(int(date_time))
+
+features = "X"
+label = "y"
 
 IMG_SIZE = 50
 training_data = []
