@@ -26,7 +26,7 @@ conv_layers 	= [3]
 layer_sizes 	= [32, 64, 128, 256, 512, 1024]
 
 
-num_epoch = 1
+num_epoch = 10
 gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
 
