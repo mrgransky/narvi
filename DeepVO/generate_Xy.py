@@ -101,14 +101,6 @@ class DataPreparation:
 		poses_path 	= os.path.join(self.data_path, 'poses')
 		img_path 	= os.path.join(self.data_path, 'sequences')
 		sequences = ['03']
-		"""
-		if test:
-			#sequences = ['03']
-			sequences = ['03', '04', '05', '06', '07', '10']
-		else:
-			#sequences= ['00', '02', '08', '09']
-			sequences = ['03']
-		"""
 		img_arr 	= []
 		gt_arr 	= []
 		for seq in sequences:
@@ -124,10 +116,8 @@ class DataPreparation:
 		print "\nDataset Path:\t", self.data_path
 		poses_path 	= os.path.join(self.data_path, 'poses')
 		img_path 	= os.path.join(self.data_path, 'sequences')
-		
 		sequences = ['03']
 		#sequences = ['03', '04', '05', '06', '07', '10']
-		
 		img_arr 	= []
 		gt_arr 	= []
 		for seq in sequences:
@@ -140,27 +130,34 @@ class DataPreparation:
 		return img_arr, gt_arr
 	
 	def save_training_Xy(self, X, y):
-		if not os.path.exists(r'./feat_VS_lbl/train'):
-			os.mkdir(r'./feat_VS_lbl/train')
-		
+		try:
+			os.makedirs(r'./feat_VS_lbl/train/')
+		except OSError as e:
+			if e.errno == 17:
+				print "already exists!"
+
 		features = "X"
 		label = "y"
+
 		print "\nSaving training data X,y...\n"	
 		torch.save(X, r'./feat_VS_lbl/train/' + str(features) 	+ '.pt')
 		torch.save(y, r'./feat_VS_lbl/train/' + str(label) 		+ '.pt')
-		print "\n\nX & y (training) saved successfully!"
+		print "\nX & y (training) saved successfully!"
 
 	def save_testing_Xy(self, X, y):
-		if not os.path.exists(r'./feat_VS_lbl/test'):
-			os.mkdir(r'./feat_VS_lbl/test')
+		try:
+			os.makedirs(r'./feat_VS_lbl/test/')
+		except OSError as e:
+			if e.errno == 17:
+				print "already exists!"
 		
 		features = "X"
 		label = "y"
-		print "\nSaving training data X,y...\n"	
+		
+		print "\nSaving testing data X,y...\n"	
 		torch.save(X, r'./feat_VS_lbl/test/' + str(features) 	+ '.pt')
 		torch.save(y, r'./feat_VS_lbl/test/' + str(label) 		+ '.pt')
-		print "\n\nX & y saved (testing) successfully!"
-		
+		print "\nX & y saved (testing) successfully!"
 		
 if __name__ == '__main__':
 	if len(sys.argv) != 2:
