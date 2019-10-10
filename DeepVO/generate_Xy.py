@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os, time, sys, math, cv2, torch, glob
-import dill
-
+#import dill
+import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -125,22 +125,13 @@ class DataPreparation:
 		label = "y"
 		print "\nStarting dump ...\n"
 		
+		"""
 		with open(r'./inp_out/' + str(features) + '.pkl', 'wb') as fX:
 			dill.dump(X, fX)
 		
 		with open(r'./inp_out/' + str(label) + '.pkl', 'wb') as fy:
 			dill.dump(y, fy)
 		
-		"""
-		pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
-		pkl.dump(X, pickle_out, -1)
-		pickle_out.close()
-
-		pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
-		pkl.dump(y, pickle_out, -1)
-		pickle_out.close()
-
-
 		joblib_X = open(r'./inp_out/' + str(features) + '.sav', "wb")
 		joblib.dump(X, joblib_X)
 		joblib_X.close()
@@ -158,7 +149,14 @@ class DataPreparation:
 		p.fast = True 
 		p.dump(X) # d could be your dictionary or any file
 		"""
-		
+		pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
+		pkl.dump(X, pickle_out, -1)
+		pickle_out.close()
+
+		pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
+		pkl.dump(y, pickle_out, -1)
+		pickle_out.close()
+
 		print "X \t & y \t saved successfully!"
 		
 if __name__ == '__main__':
