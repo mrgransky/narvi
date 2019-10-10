@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os, time, sys, math, cv2, torch, glob
-#import dill
-import pickle
+import h5py, pickle, json
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -12,6 +11,7 @@ from torch.autograd import Variable
 
 from datetime import datetime
 from sklearn.externals import joblib
+
 
 class DataPreparation:
 	def __init__(self, filePath):
@@ -96,16 +96,19 @@ class DataPreparation:
 		print "no GT: ",len(poses_set)
 		return poses_set
 
-	def VODataLoader(self, img_size = (1280,384), test=False):
+	def training_data_prep(self, img_size = (1280,384), test=False):
 		print "\nDataset Path:\t", self.data_path
 		poses_path 	= os.path.join(self.data_path, 'poses')
 		img_path 	= os.path.join(self.data_path, 'sequences')
+		sequences = ['03']
+		"""
 		if test:
 			#sequences = ['03']
 			sequences = ['03', '04', '05', '06', '07', '10']
 		else:
 			#sequences= ['00', '02', '08', '09']
 			sequences = ['03']
+		"""
 		img_arr 	= []
 		gt_arr 	= []
 		for seq in sequences:
@@ -114,50 +117,50 @@ class DataPreparation:
 		
 			img_arr.append(torch.FloatTensor(self.load_images(path2frames, img_size)))
 			gt_arr.append(torch.FloatTensor(self.load_poses(path2GT)))
-			self.save_Xy(img_arr, gt_arr)
+			self.save_training_Xy(img_arr, gt_arr)
 		return img_arr, gt_arr
 	
-	def save_Xy(self, X, y):
-		if not os.path.exists(r'./inp_out'):
-			os.mkdir(r'./inp_out')
+	def testing_data_prep(self, img_size = (1280,384)):
+		print "\nDataset Path:\t", self.data_path
+		poses_path 	= os.path.join(self.data_path, 'poses')
+		img_path 	= os.path.join(self.data_path, 'sequences')
+		
+		sequences = ['03']
+		#sequences = ['03', '04', '05', '06', '07', '10']
+		
+		img_arr 	= []
+		gt_arr 	= []
+		for seq in sequences:
+			path2frames = os.path.join(img_path, 	seq, 'image_0')
+			path2GT		= os.path.join(poses_path, seq +'.txt')
+		
+			img_arr.append(torch.FloatTensor(self.load_images(path2frames, img_size)))
+			gt_arr.append(torch.FloatTensor(self.load_poses(path2GT)))
+			self.save_testing_Xy(img_arr, gt_arr)
+		return img_arr, gt_arr
+	
+	def save_training_Xy(self, X, y):
+		if not os.path.exists(r'./feat_VS_lbl/train'):
+			os.mkdir(r'./feat_VS_lbl/train')
 		
 		features = "X"
 		label = "y"
-		print "\nStarting dump ...\n"
-		
-		"""
-		with open(r'./inp_out/' + str(features) + '.pkl', 'wb') as fX:
-			dill.dump(X, fX)
-		
-		with open(r'./inp_out/' + str(label) + '.pkl', 'wb') as fy:
-			dill.dump(y, fy)
-		
-		joblib_X = open(r'./inp_out/' + str(features) + '.sav', "wb")
-		joblib.dump(X, joblib_X)
-		joblib_X.close()
-		
-		joblib_y = open(r'./inp_out/' + str(label) + '.sav', "wb")
-		joblib.dump(y, joblib_y)
-		joblib_y.close()
-		
-		
-		ff = open(r'./inp_out/' + str(features) + '.hkl', 'w')
-		hkl.dump(X, ff)
-		ff.close() 
-		
-		p = cpkl.Pickler(open("temp.p","wb")) 
-		p.fast = True 
-		p.dump(X) # d could be your dictionary or any file
-		"""
-		pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
-		pickle.dump(X, pickle_out, -1)
-		pickle_out.close()
+		print "\nSaving training data X,y...\n"	
+		torch.save(X, r'./feat_VS_lbl/train/' + str(features) 	+ '.pt')
+		torch.save(y, r'./feat_VS_lbl/train/' + str(label) 		+ '.pt')
+		print "\n\nX & y (training) saved successfully!"
 
-		pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
-		pickle.dump(y, pickle_out, -1)
-		pickle_out.close()
-
-		print "X \t & y \t saved successfully!"
+	def save_testing_Xy(self, X, y):
+		if not os.path.exists(r'./feat_VS_lbl/test'):
+			os.mkdir(r'./feat_VS_lbl/test')
+		
+		features = "X"
+		label = "y"
+		print "\nSaving training data X,y...\n"	
+		torch.save(X, r'./feat_VS_lbl/test/' + str(features) 	+ '.pt')
+		torch.save(y, r'./feat_VS_lbl/test/' + str(label) 		+ '.pt')
+		print "\n\nX & y saved (testing) successfully!"
+		
 		
 if __name__ == '__main__':
 	if len(sys.argv) != 2:
@@ -165,4 +168,6 @@ if __name__ == '__main__':
 		sys.exit()
 
 	dataloader = DataPreparation(sys.argv[1])
-	dataloader.VODataLoader()
+	dataloader.training_data_prep()
+	dataloader.testing_data_prep()
+	

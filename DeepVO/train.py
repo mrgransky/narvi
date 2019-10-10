@@ -12,32 +12,24 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from datetime import datetime
 from deep_vo_net import DeepVONet
-from generate_Xy import DataPreparation
+#from generate_Xy import DataPreparation
 
-def save_Xy():
-	if not os.path.exists(r'./inp_out'):
-		os.mkdir(r'./inp_out')
-				
-	pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
-	pickle.dump(X, pickle_out)
-	pickle_out.close()
+def load_Xy(path):
+	print "\nLoading training data X,y from: ", str(path)
+	X = torch.load(path + 'X.pt')
+	y = torch.load(path + 'y.pt')
+	return X,y
 
-	pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
-	pickle.dump(y, pickle_out)
-	pickle_out.close()
+#dataloader = DataPreparation("/home/xenial/Datasets/KITTI")
+#X, y = dataloader.VODataLoader()
 
-	print "X \t y \t saved successfully!"
+if len(sys.argv) != 2:
+	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/Xy folder]\n"
+	sys.exit()
 
-def load_Xy():
-	pickle_in = open(str(features),"rb")
-	X = pickle.load(pickle_in)
-	print "\n\nX shape = ", X.shape[1:]
-	pickle_in = open(str(labels),"rb")
-	y = pickle.load(pickle_in)
+X, y = load_Xy(sys.argv[1])
+print "\n\nX & y loaded successfully!"
 
-
-dataloader = DataPreparation("/home/xenial/Datasets/KITTI")
-X, y = dataloader.VODataLoader()
 
 print "\n\nDetails of X :\n"
 print "type :\t" 			, type(X) 
@@ -62,7 +54,8 @@ y = torch.stack(y).view(-1, 10, 6)
 
 print "Details of X: " 	, X.size()
 print "Details of y: "	, y.size()
-"""
+
+
 #Helper function to display image
 def imshow(img):
 	plt.figure
@@ -136,5 +129,3 @@ if not os.path.exists(r'./models'):
 torch.save(model.state_dict(), r'./models/' + str(NAME) + '.pt')
 
 print("\nModel saved successfully!!")
-
-"""
