@@ -9,7 +9,6 @@ import torch.optim as optim
 
 from torch.autograd import Function
 from torch.autograd import Variable
-from torchvision import models
 
 from datetime import datetime
 from sklearn.externals import joblib
