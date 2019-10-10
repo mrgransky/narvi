@@ -166,5 +166,9 @@ class DataPreparation:
 		print "X \t & y \t saved successfully!"
 		
 if __name__ == '__main__':
-	dataloader = DataPreparation("/home/xenial/Datasets/KITTI")
+	if len(sys.argv) != 2:
+		print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/Dataset]\n"
+		sys.exit()
+
+	dataloader = DataPreparation(sys.argv[1])
 	dataloader.VODataLoader()
