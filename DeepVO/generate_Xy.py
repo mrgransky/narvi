@@ -150,11 +150,11 @@ class DataPreparation:
 		p.dump(X) # d could be your dictionary or any file
 		"""
 		pickle_out = open(r'./inp_out/' + str(features) + '.pickle', "wb")
-		pkl.dump(X, pickle_out, -1)
+		pickle.dump(X, pickle_out, -1)
 		pickle_out.close()
 
 		pickle_out = open(r'./inp_out/' + str(label) + '.pickle', "wb")
-		pkl.dump(y, pickle_out, -1)
+		pickle.dump(y, pickle_out, -1)
 		pickle_out.close()
 
 		print "X \t & y \t saved successfully!"
