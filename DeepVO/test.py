@@ -27,13 +27,34 @@ def get_mse_diff(x,y):
 		diff += (x[i]-y[i])*(x[i]-y[i])
 	return diff/6
 
-if len(sys.argv) != 2:
-	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/model.pt]\n"
+if len(sys.argv) != 3:
+	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/Xy folder] [PATH/2/model.pt]\n"
 	sys.exit()
 
-#Testing functions, it is predicting the output for test sequence as per the model
+def load_pytorch_model(path):
+	print "\nLoading model..."
+	model = DeepVONet()
+	model.load_state_dict(torch.load(path))
+	return model
+	
+def load_Xy_train(path):
+	print "\nLoading training data X,y from: ", str(path) + 'train/'
+	X = torch.load(path + 'train/' + 'X.pt')
+	y = torch.load(path + 'train/' + 'y.pt')
+	return X,y
+
+X_train,y_train = load_Xy_train(sys.argv[1])
+print "\n\nX & y TRAIN loaded successfully!"
+
+def load_Xy_test(path):
+	print "\nLoading testing data X,y from: ", str(path) + 'test/'
+	X = torch.load(path + 'test/' + 'X.pt')
+	y = torch.load(path + 'test/' + 'y.pt')
+	return X,y
+
 def testing_model (model, test_num, X):
 	start_time = time.time()
+	print "start_time:\t", start_time
 	Y_output = []
 	count = 0
 	totcount = 0
@@ -45,17 +66,14 @@ def testing_model (model, test_num, X):
 	print ("Time taken in Testing {0}".format((time.time() - start_time)))
 	return torch.stack(Y_output)
 
-path = sys.argv[1]
+X_test,y_test = load_Xy_test(sys.argv[1])
+print "\n\nX & y TEST loaded successfully!"
 
-print "\nLoading model..."
-model = DeepVONet()
-model.load_state_dict(torch.load(path))
-print "\nEvaluating model :"
+model = load_pytorch_model(sys.argv[2])
+print "\nModel loaded successfully, Evaluating ...\n\n"
+
 print model.eval()
-
-
-dataloader = DataPreparation("/home/xenial/Datasets/KITTI")
-X_test,y_test = dataloader.VODataLoader(test=True)
+	
 
 X_test = torch.stack(X_test).view(-1, 10, 6, 384, 1280)
 y_test = torch.stack(y_test).view(-1, 10, 6)
@@ -65,7 +83,9 @@ print "\n\ny_test.size = " , y_test.size()
 
 #Getting predictions from the model 
 test_batch_size = 2
-y_output = testing_model(model, test_batch_size, X)
+
+###### ERRRRRROOOORRRR: ######
+y_output = testing_model(model, test_batch_size, X_train)
 
 print "\ny_output.size = " , y_output.size()
 

@@ -12,14 +12,12 @@ from torch.autograd import Variable
 from datetime import datetime
 from sklearn.externals import joblib
 
-
 class DataPreparation:
 	def __init__(self, filePath):
 		self.data_path = filePath
 
 	def get_image(self, path, img_size= (1280,384)):
 		img = cv2.imread(path)
-		#print "\n\nimage orig shape =\t", img.shape
 		img = cv2.resize(img, img_size, cv2.INTER_LINEAR) # bilinear interpolation (default)
 		return img
 	
@@ -32,7 +30,6 @@ class DataPreparation:
 		for i in range(len(images) - 1):
 			img1 = images[i]
 			img2 = images[i+1]
-			#print "\nshape:\timg_1:\t", img1.shape , "\t img_2:\t", img2.shape
 			img = np.concatenate([img1, img2], axis = -1)
 			img_arr.append(img)
 		print "no frames: ", len(img_arr)
@@ -96,7 +93,7 @@ class DataPreparation:
 		print "no GT: ",len(poses_set)
 		return poses_set
 
-	def training_data_prep(self, img_size = (1280,384), test=False):
+	def training_data_prep(self, img_size = (1280,384)):
 		print "\nDataset Path:\t", self.data_path
 		poses_path 	= os.path.join(self.data_path, 'poses')
 		img_path 	= os.path.join(self.data_path, 'sequences')

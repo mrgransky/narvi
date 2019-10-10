@@ -12,16 +12,12 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from datetime import datetime
 from deep_vo_net import DeepVONet
-#from generate_Xy import DataPreparation
 
 def load_Xy(path):
 	print "\nLoading training data X,y from: ", str(path)
-	X = torch.load(path + 'X.pt')
-	y = torch.load(path + 'y.pt')
+	X = torch.load(path + 'train/' + 'X.pt')
+	y = torch.load(path + 'train/' + 'y.pt')
 	return X,y
-
-#dataloader = DataPreparation("/home/xenial/Datasets/KITTI")
-#X, y = dataloader.VODataLoader()
 
 if len(sys.argv) != 2:
 	print "\nSYNTAX: \n\npython " + sys.argv[0] + " [PATH/2/Xy folder]\n"
