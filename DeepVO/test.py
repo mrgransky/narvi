@@ -15,11 +15,17 @@ def get_accuracy(outputs, labels, batch_size):
 	diff =0
 	for i in range(batch_size):
 		for j in range(10):
-			out = outputs[j].numpy()
-			lab = labels[j].numpy()
+			print "\n\n#################################################n\n"
+			print "\n\n(i,j) = \t ", i , " , ", j
+			out = outputs[j].detach().numpy()
+			print "\nout[", j,"] = ", out
+			lab = labels[j].detach().numpy()
+			print "\nlab[", j,"] = ", lab
 			diff+=get_mse_diff(out,lab)
-	#print("Loss : ",diff/(batch_size*10),"%")
-	print("Accuracy : ",(1 -diff/(batch_size*10))*100,"%")
+			print "\ndiff = ", diff
+			print "\n\n------------------------------------------------\n\n"
+	print "Loss : ",diff/(batch_size*10)," %"
+	print "Accuracy : ",(1 -diff/(batch_size*10))*100," %"
     
 def get_mse_diff(x,y):
 	diff= 0
@@ -68,7 +74,7 @@ def testing_model (model, test_num, X):
 
 X_test,y_test = load_Xy_test(sys.argv[1])
 print "\n\nX & y TEST loaded successfully!"
-
+sp
 model = load_pytorch_model(sys.argv[2])
 print "\nModel loaded successfully, Evaluating ...\n\n"
 
