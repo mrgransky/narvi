@@ -18,7 +18,6 @@ mnist = tf.keras.datasets.mnist
 # unpacks images to x_train/x_test and labels to y_train/y_test
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
 
-
 x_train = tf.keras.utils.normalize(x_train, axis = 1)
 x_test = tf.keras.utils.normalize(x_test, axis = 1)
 
