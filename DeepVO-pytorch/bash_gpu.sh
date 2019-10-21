@@ -2,8 +2,8 @@
                                                                                             
 # GPU setup:
 #SBATCH -J FRD_GPU
-#SBATCH -o output_%a.txt
-#SBATCH -e error_%a.txt
+#SBATCH -o ./logs/output.txt
+#SBATCH -e ./logs/output.txt
 #SBATCH -n 1
 #SBATCH -c 1
 
@@ -22,8 +22,7 @@ CWD="$(pwd)"
 
 srun echo "cur_dir: $CWD"
 srun echo "home_dir: $HOME"
-srun echo "host: $hostname"
-srun echo "Current time : $now"
+srun echo "Time: $now"
 
 max_idx=0
 max_mem=0
