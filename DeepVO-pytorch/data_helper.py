@@ -11,7 +11,7 @@ from helper import normalize_angle_delta
 
 def generate_data(sequences, seq_len_range, overlap, ts=1, 
 							pad_y=False, shuffle=False, sort=True):
-	X_path, Y, X_len = [], [], []
+	X_len, X_path, Y = [], [], []
 	for seq in sequences:
 		start_t = time.time()
 		try:
@@ -31,7 +31,6 @@ def generate_data(sequences, seq_len_range, overlap, ts=1,
 				print('Sample start from frame {}'.format(start_frames))
 			else:
 				start_frames = [0]
-			
 			for st in start_frames:
 				seq_len = seq_len_range[0]
 				n_frames = len(fpaths) - st
@@ -65,15 +64,19 @@ def generate_data(sequences, seq_len_range, overlap, ts=1,
 							padded = np.concatenate((poses[start:start+n], pad_zero))
 							Y.append(padded.tolist())
 					else:
-						print('Last %d frames is not used' %(start+n-n_frames))
+						print('Last %d frames not used' %(start+n-n_frames))
 						break
 					start += n - overlap
 					X_len.append(len(x_seg))
-		print('seq {} finish in {} sec'.format(seq, time.time()-start_t))
+		print "DataFrame for seq {} created in {} [s]" .format(seq, time.time()-start_t)
+		#print "X_len = {}".format(X_len)
+		print "-"*50
+		
 	
 	# Convert to pandas dataframes
 	data = {'seq_len': X_len, 'image_path': X_path, 'pose': Y}
 	df = pd.DataFrame(data, columns = ['seq_len', 'image_path', 'pose'])
+	#print "dataFrame = \n{}".format(df)
 	# Shuffle through all videos
 	if shuffle:
 		df = df.sample(frac=1)
@@ -278,7 +281,6 @@ if __name__ == '__main__':
     dataset = ImageSequenceDataset(df, resize_mode, new_size, img_mean)
     
     sorted_sampler = SortedRandomBatchSampler(df, batch_size=4, drop_last=True)
-    
     dataloader = DataLoader(dataset, batch_sampler=sorted_sampler, n_workers=n_workers)
     
     print('Elapsed Time (dataloader): {} sec'.format(time.time()-start_t))

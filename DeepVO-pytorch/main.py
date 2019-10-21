@@ -31,19 +31,21 @@ with open(par.record_path, mode) as f:
 print "#" * 50
 print "\t\tPreparing Data"
 print "#" * 50
-
 if os.path.isfile(par.train_df_path) and os.path.isfile(par.test_df_path):
-	print "\nLoadinf data info from:\t{}".format(par.train_df_path)
+	print "\nData info already exists!"
+	print "\nLoading data info from:\t{}".format(par.train_df_path)
 	train_df = pd.read_pickle(par.train_df_path)
 	valid_df = pd.read_pickle(par.test_df_path)
 else:
+	print "\nData info NOT found!"
 	print "\nCreating new data info..."
 	if par.partition != None:
 		print "\nWith partition..."
 		partition = par.partition
 		train_df, valid_df = get_partition_data_info(partition, par.train_seq, par.seq_len, overlap=1, sample_times=par.ts, shuffle=True, sort=True)
 	else:
-		print "\nWith NO partition..."
+		print "\nWith NO partition...\n"
+		
 		train_df = generate_data(par.train_seq, seq_len_range=par.seq_len, overlap=1, ts=par.ts)
 		valid_df = generate_data(par.test_seq, seq_len_range=par.seq_len, overlap=1, ts=par.ts)
 	# save the data info
@@ -54,7 +56,8 @@ print "\n\nloading data (TRAINING)"
 
 train_sampler = SortedRandomBatchSampler(train_df, par.batch_size, drop_last=True)
 
-trainSET = LoadMyDataset(train_df, par.resize_mode, (par.img_w, par.img_h), par.img_means, par.img_stds, par.minus_point_5)
+trainSET = LoadMyDataset(train_df, par.resize_mode, (par.img_w, par.img_h), 
+									par.img_means, par.img_stds, par.minus_point_5)
 
 train_dl = DataLoader(trainSET, batch_sampler=train_sampler, num_workers=par.n_processors, pin_memory=par.pin_mem)
 
@@ -101,26 +104,21 @@ elif par.optim['opt'] == 'Cosine':
 
 # Load trained DeepVO model and optimizer
 if par.resume:
-	#if os.path.isfile(par.load_model_path) and os.path.isfile(par.load_optimizer_path):
+	print "\nTrying to Load ...\n\nmodel: {}\n\noptimizer:{}".format(par.pretrained_model,
+																							par.pretrained_optimizer) 
 	try:
 		if use_cuda:
-			M_deepvo.load_state_dict(torch.load(par.load_model_path))
-			optimizer.load_state_dict(torch.load(par.load_optimizer_path))
+			M_deepvo.load_state_dict(torch.load(par.pretrained_model))
+			optimizer.load_state_dict(torch.load(par.pretrained_optimizer))
 		else:
-			M_deepvo.load_state_dict(torch.load(par.load_model_path, map_location='cpu'))
-			optimizer.load_state_dict(torch.load(par.load_optimizer_path, map_location='cpu'))
-		print('Loading model from: ', 		par.load_model_path)
-		print('Loading optimizer from: ', 	par.load_optimizer_path)
+			M_deepvo.load_state_dict(torch.load(par.pretrained_model, map_location='cpu'))
+			optimizer.load_state_dict(torch.load(par.pretrained_optimizer, map_location='cpu'))
 	except Exception as e:
 		print str(e)
-		print "\nERROR: files\n{}\nand\n{}\nnot found!\n".format(par.load_model_path,
-																					par.load_optimizer_path)
 		sys.exit()
 
-# Train
 print "Recording loss in:\t{}".format(par.record_path)
 min_loss_t, min_loss_v = 1e10, 1e10
-
 M_deepvo.train()
 for ep in range(par.epochs):
 	st_t = time.time()
@@ -134,6 +132,7 @@ for ep in range(par.epochs):
 		print "\nEpoch {}/{}".format(ep + 1, par.epochs)
 		print('-'*20)
 		print "\nidx = {}\tt_x = {}\tty = {}".format(idx, t_x.shape, t_y.shape)
+		
 		if use_cuda:
 			t_x = t_x.cuda(non_blocking=par.pin_mem)
 			t_y = t_y.cuda(non_blocking=par.pin_mem)
@@ -143,7 +142,7 @@ for ep in range(par.epochs):
 		loss_mean += float(ls)
 		if par.optim == 'Cosine':
 			lr_scheduler.step()
-	print('Training time: {:.1f} [s]'.format(time.time()-st_t))
+	print 'Training time: {:.1f} [s]'.format(time.time()-st_t)
 	loss_mean /= len(train_dl)
 
 	print "\nlen valid_df = {}".format(len(valid_df))
@@ -157,6 +156,7 @@ for ep in range(par.epochs):
 		if use_cuda:
 			v_x = v_x.cuda(non_blocking=par.pin_mem)
 			v_y = v_y.cuda(non_blocking=par.pin_mem)
+			
 		v_ls = M_deepvo.get_loss(v_x, v_y).data.cpu().numpy()
 		v_loss_list.append(float(v_ls))
 		loss_mean_valid += float(v_ls)

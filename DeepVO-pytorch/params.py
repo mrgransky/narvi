@@ -1,14 +1,17 @@
-import os
+import os, multiprocessing
 
 class Parameters():
 	def __init__(self):
-		self.n_processors = 8
+		self.n_processors = multiprocessing.cpu_count()
 		
 		"""
-		self.data_dir =  'KITTI/'
+		# local machine:
+		self.data_dir =  '/home/xenial/Datasets/KITTI/'
 		self.image_dir = self.data_dir + 'images/'
 		self.pose_dir = self.data_dir + 'pose_GT/'
 		"""
+		
+		# server machine:
 		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
 		self.image_dir = self.data_dir + 'images/'
 		self.pose_dir 	= self.data_dir + 'pose_GT/'
@@ -40,7 +43,7 @@ class Parameters():
 
 
 		# Model
-		self.rnn_hidden_size = 100 # 1000
+		self.rnn_hidden_size = 1000
 		self.conv_dropout = (0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.5)
 		self.rnn_dropout_out = 0.5
 		self.rnn_dropout_between = 0   # 0: no dropout
@@ -50,7 +53,7 @@ class Parameters():
 		# Training
 		self.epochs = 10 #250
 		self.batch_size = 8
-		self.pin_mem = False #True
+		self.pin_mem = True
 		self.optim = {'opt': 'Adagrad', 'lr': 5e-4}
 					# Choice:
 					# {'opt': 'Adagrad', 'lr': 0.001}
@@ -64,21 +67,23 @@ class Parameters():
 								# './pretrained/flownets_bn_EPE2.459.pth.tar'  
 								# './pretrained/flownets_EPE1.951.pth.tar'
 								
-		#self.resume = True  # original resume training
-		self.resume = False  # resume training
-		
+		self.resume = False #True  # resume training
 		self.resume_t_or_v = '.train'
 		
+		self.log_path = 'logs/'
 		self.load_model_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
 		
 		self.load_optimizer_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
+
+		self.pretrained_model = 'models_pretrained/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
+		
+		self.pretrained_optimizer = 'models_pretrained/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
 
 		self.record_path = 'records/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.txt'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]))
 		
 		self.save_model_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]))
 		
 		self.save_optimzer_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]))
-		
 		
 		if not os.path.isdir(os.path.dirname(self.record_path)):
 			os.makedirs(os.path.dirname(self.record_path))
@@ -91,5 +96,10 @@ class Parameters():
 			
 		if not os.path.isdir(os.path.dirname(self.train_df_path)):
 			os.makedirs(os.path.dirname(self.train_df_path))
+
+		if not os.path.isdir(os.path.dirname(self.log_path)):
+			os.makedirs(os.path.dirname(self.log_path))
+
+
 
 par = Parameters()
