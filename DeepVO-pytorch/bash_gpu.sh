@@ -16,13 +16,14 @@ module load CUDA/9.0
 source activate py27
 srun clear
 srun echo "BATCH GPU ...!"
-now = "$(date)"
-computer_name = "$(hostname)"
+now="$(date)"
+computer_name="$(hostname)"
 CWD="$(pwd)"
+
 srun echo "cur_dir: $CWD"
 srun echo "home_dir: $HOME"
 srun echo "host: $hostname"
-echo "Current time : $now"
+srun echo "Current time : $now"
 
 max_idx=0
 max_mem=0

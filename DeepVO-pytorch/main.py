@@ -130,9 +130,8 @@ for ep in range(par.epochs):
 	#for idx, t_x, t_y in train_dl:
 	for idx, t_x, t_y in tqdm(train_dl):
 		print "\nEpoch {}/{}".format(ep + 1, par.epochs)
-		print('-'*20)
 		print "\nidx = {}\tt_x = {}\tty = {}".format(idx, t_x.shape, t_y.shape)
-		
+		print('-'*100)
 		if use_cuda:
 			t_x = t_x.cuda(non_blocking=par.pin_mem)
 			t_y = t_y.cuda(non_blocking=par.pin_mem)
