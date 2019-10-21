@@ -7,6 +7,7 @@ from PIL import Image
 from data_helper import generate_data, LoadMyDataset
 from torch.utils.data import DataLoader
 from helper import eulerAnglesToRotationMatrix
+sys.dont_write_bytecode = True
 
 if torch.cuda.is_available():
 	device = torch.device("cuda:0")
@@ -21,25 +22,18 @@ else:
 	print "\t\tRunning on CPU ..."
 	print "#" * 50
 
-
 if __name__ == '__main__':
-	sequences = ['04', '05', '07', '10', '09']
-	# Path
-	load_model_path = par.load_model_path
-	save_dir = 'result/'
-	if not os.path.exists(save_dir):
-		os.makedirs(save_dir)
-
+	sequences = ['04', '05', '07', '09', '10']
 	# Load model
 	M_deepvo = DeepVO(par.img_h, par.img_w, par.batch_norm)
-	print "Loading model:\t{}".format(load_model_path)
+	print "Loading model:\t{}".format(par.load_model_path)
 	#M_deepvo.to(device)
 	try:
 		if use_cuda:
 			M_deepvo = M_deepvo.cuda()
-			M_deepvo.load_state_dict(torch.load(load_model_path))
+			M_deepvo.load_state_dict(torch.load(par.load_model_path))
 		else:
-			M_deepvo.load_state_dict(torch.load(load_model_path, map_location={'cuda:0': 'cpu'}))
+			M_deepvo.load_state_dict(torch.load(par.load_model_path, map_location={'cuda:0': 'cpu'}))
 	except Exception as e:
 		print str(e)
 		sys.exit()
@@ -130,7 +124,7 @@ if __name__ == '__main__':
 		print('Predict use {} sec'.format(time.time() - st_t))
 
 		# Save answer
-		with open('{}/out_{}.txt'.format(save_dir, seq), 'w') as f:
+		with open('{}/out_{}.txt'.format(par.save_dir, seq), 'w') as f:
 			for pose in answer:
 				if type(pose) == list:
 					f.write(', '.join([str(p) for p in pose]))

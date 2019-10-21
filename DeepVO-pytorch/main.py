@@ -7,6 +7,7 @@ from params import par
 from model import DeepVO
 from data_helper import generate_data, SortedRandomBatchSampler, LoadMyDataset, get_partition_data_info
 
+
 if torch.cuda.is_available():
 	device = torch.device("cuda:0")
 	use_cuda = True
@@ -21,7 +22,7 @@ else:
 	print "#" * 50
 
 # Write all hyperparameters to record_path
-mode = 'a' if par.resume else 'w'
+mode = 'a' if par.model_available else 'w'
 with open(par.record_path, mode) as f:
 	f.write('\n'+'='*50 + '\n')
 	f.write('\n'.join("%s: %s" % item for item in vars(par).items()))
@@ -73,59 +74,67 @@ valid_dl = DataLoader(testSET, batch_sampler=valid_sampler, num_workers=par.n_pr
 print "Testing dataset with {} samples".format(len(valid_df.index))
 
 # Model
-#M_deepvo = DeepVO(par.img_h, par.img_w, par.batch_norm).to(device)
-#print "\n\nModel Summary:\n{}".format(M_deepvo)
+net = DeepVO(par.img_h, par.img_w, par.batch_norm).to(device)
+#print "\n\nModel Summary:\n{}".format(net)
 if use_cuda:
 	print('CUDA used.')
-	M_deepvo = M_deepvo.cuda()
+	net = net.cuda()
 
 # Load FlowNet weights pretrained with FlyingChairs
 # NOTE: the pretrained model assumes image rgb values in range [-0.5, 0.5]
-if par.pretrained_flownet and not par.resume:
+if par.pretrained_flownet and not par.model_available:
 	if use_cuda:
-		pretrained_w = torch.load(par.pretrained_flownet)
+		pretrained_dict = torch.load(par.pretrained_flownet)
 	else:
-		pretrained_w = torch.load(par.pretrained_flownet, map_location='cpu')
+		pretrained_dict = torch.load(par.pretrained_flownet, map_location='cpu')
 	print "Loading FlowNet pretrained model ..."
 	
 	# Use only conv-layer-part of FlowNet as CNN for DeepVO
-	model_dict 	= M_deepvo.state_dict()
-	update_dict = {k: v for k, v in pretrained_w['state_dict'].items() if k in model_dict}
+	model_dict 	= net.state_dict()
+	
+	# 1. filter out unnecessary keys
+	update_dict = {k: v for k, v in pretrained_dict['state_dict'].items() if k in model_dict}
+	
+	# 2. overwrite entries in the existing state dict
 	model_dict.update(update_dict)
-	M_deepvo.load_state_dict(model_dict)
+	
+	# 3. load the new state dict
+	net.load_state_dict(model_dict)
+	
 
 # Create optimizer
 if par.optim['opt'] == 'Adam':
-	optimizer 		= torch.optim.Adam(M_deepvo.parameters(), lr=1e-2, betas=(0.9, 0.999))
+	optimizer 		= torch.optim.Adam(net.parameters(), lr=1e-2, betas=(0.9, 0.999))
 elif par.optim['opt'] == 'Adagrad':
-	optimizer 		= torch.optim.Adagrad(M_deepvo.parameters(), lr=par.optim['lr'])
+	optimizer 		= torch.optim.Adagrad(net.parameters(), lr=par.optim['lr'])
 elif par.optim['opt'] == 'Cosine':
-	optimizer 		= torch.optim.SGD(M_deepvo.parameters(), lr=par.optim['lr'])
+	optimizer 		= torch.optim.SGD(net.parameters(), lr=par.optim['lr'])
 	T_iter 			= par.optim['T']*len(train_dl)
 	lr_scheduler 	= torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_iter, eta_min=0, last_epoch=-1)
 
 # Load trained DeepVO model and optimizer
-if par.resume:
-	print "\nTrying to Load ...\n\nmodel: {}\n\noptimizer:{}".format(par.pretrained_model,
-																							par.pretrained_optimizer) 
+if par.model_available:
+	print "\nTrying to Load ...\n\nmodel: {}\n\noptimizer:{}".format(par.load_model_path,
+																							par.load_optimizer_path) 
 	try:
 		if use_cuda:
-			M_deepvo.load_state_dict(torch.load(par.pretrained_model))
-			optimizer.load_state_dict(torch.load(par.pretrained_optimizer))
+			#net.load_state_dict(torch.load(par.load_model_path))		
+			net.load_state_dict(torch.load(par.load_model_path))
+			optimizer.load_state_dict(torch.load(par.load_optimizer_path))
 		else:
-			M_deepvo.load_state_dict(torch.load(par.pretrained_model, map_location='cpu'))
-			optimizer.load_state_dict(torch.load(par.pretrained_optimizer, map_location='cpu'))
+			net.load_state_dict(torch.load(par.load_model_path, map_location='cpu'))
+			optimizer.load_state_dict(torch.load(par.load_optimizer_path, map_location='cpu'))
 	except Exception as e:
 		print str(e)
 		sys.exit()
 
-print "Recording loss in:\t{}".format(par.record_path)
+print "Recording loss to:{}".format(par.record_path)
 min_loss_t, min_loss_v = 1e10, 1e10
-M_deepvo.train()
+net.train()
 for ep in range(par.epochs):
 	st_t = time.time()
 	# Train
-	M_deepvo.train()
+	net.train()
 	loss_mean = 0
 	t_loss_list = []
 	print "\nlen train_df = {}".format(len(train_df))
@@ -138,7 +147,7 @@ for ep in range(par.epochs):
 			t_x = t_x.cuda(non_blocking=par.pin_mem)
 			t_y = t_y.cuda(non_blocking=par.pin_mem)
 
-		ls = M_deepvo.step(t_x, t_y, optimizer).data.cpu().numpy()
+		ls = net.step(t_x, t_y, optimizer).data.cpu().numpy()
 		t_loss_list.append(float(ls))
 		loss_mean += float(ls)
 		if par.optim == 'Cosine':
@@ -149,7 +158,7 @@ for ep in range(par.epochs):
 	print "\nlen valid_df = {}".format(len(valid_df))
 	# Validation
 	st_t = time.time()
-	M_deepvo.eval()
+	net.eval()
 	loss_mean_valid = 0
 	v_loss_list = []
 	#for _, v_x, v_y in valid_dl:
@@ -158,7 +167,7 @@ for ep in range(par.epochs):
 			v_x = v_x.cuda(non_blocking=par.pin_mem)
 			v_y = v_y.cuda(non_blocking=par.pin_mem)
 			
-		v_ls = M_deepvo.get_loss(v_x, v_y).data.cpu().numpy()
+		v_ls = net.get_loss(v_x, v_y).data.cpu().numpy()
 		v_loss_list.append(float(v_ls))
 		loss_mean_valid += float(v_ls)
 	print('Testing time: {:.1f} [s]'.format(time.time()-st_t))
@@ -175,7 +184,7 @@ for ep in range(par.epochs):
 	if loss_mean_valid < min_loss_v and ep % check_interval == 0:
 		min_loss_v = loss_mean_valid
 		print('Save model at ep {}, mean of valid loss: {}'.format(ep+1, loss_mean_valid))
-		torch.save(M_deepvo.state_dict(),	par.save_model_path		+ '.valid')
+		torch.save(net.state_dict(),	par.save_model_path		+ '.valid')
 		torch.save(optimizer.state_dict(),	par.save_optimzer_path	+ '.valid')
 	
 	# save if the training loss decrease
@@ -183,7 +192,7 @@ for ep in range(par.epochs):
 	if loss_mean < min_loss_t and ep % check_interval == 0:
 		min_loss_t = loss_mean
 		print('Save model at ep {}, mean of train loss: {}'.format(ep+1, loss_mean))
-		torch.save(M_deepvo.state_dict(), 	par.save_model_path		+ '.train')
+		torch.save(net.state_dict(), 	par.save_model_path		+ '.train')
 		torch.save(optimizer.state_dict(), 	par.save_optimzer_path	+ '.train')
 	
 	f.close()
