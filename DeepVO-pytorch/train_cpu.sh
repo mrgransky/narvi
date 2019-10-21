@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=32768M
-#SBATCH --ntasks=5-05:50:00
+#SBATCH --time=5-05:50:00
 #SBATCH --partition=normal
 
 source activate py27
