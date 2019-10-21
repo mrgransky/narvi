@@ -55,7 +55,7 @@ class Parameters():
 		self.batch_norm = True
 		
 		# Training
-		self.epochs = 10 #250
+		self.epochs = 30 #250
 		self.batch_size = 8
 		self.pin_mem = True
 		self.optim = {'opt': 'Adagrad', 'lr': 5e-4}
@@ -119,7 +119,4 @@ class Parameters():
 		if not os.path.isdir(os.path.dirname(self.save_dir)):
 			os.makedirs(os.path.dirname(self.save_dir))
 		
-
-
-
 par = Parameters()
