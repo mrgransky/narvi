@@ -7,7 +7,7 @@
 #SBATCH -e gpu_test_%j.txt
 
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=2
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=32768M
 #SBATCH --time=5-05:50:00
@@ -24,7 +24,7 @@ CWD="$(pwd)"
 srun echo "cur_dir: $CWD"
 srun echo "home_dir: $HOME"
 srun echo "Time: $now"
-srun echo NPROCS=$NPROCS
+srun echo NPROCS=nproc
 
 max_idx=0
 max_mem=0
