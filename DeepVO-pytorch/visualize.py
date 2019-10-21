@@ -1,4 +1,7 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 import numpy as np
 import time
 from params import par
@@ -22,9 +25,10 @@ def plot_route(gt, out, c_gt='g', c_out='r'):
 
 
 # Load in GT and predicted pose
-sequences = ['00', '02', '08', '09']
-sequences += ['01', '04', '05', '06', '07', '10']
+#sequences = ['00', '02', '08', '09']
+#sequences += ['01', '04', '05', '06', '07', '10']
 
+sequences = ['04', '05', '07', '10', '09']
 
 for sq in sequences:
 	print('='*50)

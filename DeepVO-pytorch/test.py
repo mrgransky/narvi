@@ -24,8 +24,6 @@ else:
 
 if __name__ == '__main__':
 	sequences = ['04', '05', '07', '10', '09']
-	#sequences = ['04']
-
 	# Path
 	load_model_path = par.load_model_path
 	save_dir = 'result/'
@@ -35,6 +33,7 @@ if __name__ == '__main__':
 	# Load model
 	M_deepvo = DeepVO(par.img_h, par.img_w, par.batch_norm)
 	print "Loading model:\t{}".format(load_model_path)
+	#M_deepvo.to(device)
 	try:
 		if use_cuda:
 			M_deepvo = M_deepvo.cuda()

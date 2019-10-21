@@ -73,8 +73,11 @@ valid_dl = DataLoader(testSET, batch_sampler=valid_sampler, num_workers=par.n_pr
 print "Testing dataset with {} samples".format(len(valid_df.index))
 
 # Model
-M_deepvo = DeepVO(par.img_h, par.img_w, par.batch_norm).to(device)
+#M_deepvo = DeepVO(par.img_h, par.img_w, par.batch_norm).to(device)
 #print "\n\nModel Summary:\n{}".format(M_deepvo)
+if use_cuda:
+	print('CUDA used.')
+	M_deepvo = M_deepvo.cuda()
 
 # Load FlowNet weights pretrained with FlyingChairs
 # NOTE: the pretrained model assumes image rgb values in range [-0.5, 0.5]
@@ -82,8 +85,7 @@ if par.pretrained_flownet and not par.resume:
 	if use_cuda:
 		pretrained_w = torch.load(par.pretrained_flownet)
 	else:
-		pretrained_w = torch.load(par.pretrained_flownet_flownet, map_location='cpu')
-		
+		pretrained_w = torch.load(par.pretrained_flownet, map_location='cpu')
 	print "Loading FlowNet pretrained model ..."
 	
 	# Use only conv-layer-part of FlowNet as CNN for DeepVO
