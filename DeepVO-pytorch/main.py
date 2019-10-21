@@ -155,6 +155,7 @@ for ep in range(par.epochs):
 	print 'Training time: {:.1f} [s]'.format(time.time()-st_t)
 	loss_mean /= len(train_dl)
 
+
 	print "\nlen valid_df = {}".format(len(valid_df))
 	# Validation
 	st_t = time.time()

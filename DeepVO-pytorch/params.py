@@ -4,17 +4,19 @@ class Parameters():
 	def __init__(self):
 		self.n_processors = multiprocessing.cpu_count()
 		
-		# local machine:
-		self.data_dir =  '/home/xenial/Datasets/KITTI/'
-		self.image_dir = self.data_dir + 'images/'
-		self.pose_dir = self.data_dir + 'pose_GT/'
-		
 		"""
+		# local machine:
+		self.data_dir 		=  '/home/xenial/Datasets/KITTI/'
+		"""
+		
 		# server machine:
 		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
-		self.image_dir = self.data_dir + 'images/'
-		self.pose_dir 	= self.data_dir + 'pose_GT/'
-		"""
+		
+		
+		DeepVO_MISC_PATH 	= self.data_dir + 'DeepVO_misc/'
+		self.image_dir 	= self.data_dir + 'images/'
+		self.pose_dir 		= self.data_dir + 'pose_GT/'
+		
 		
 		self.train_seq = ['00', '01', '02', '05', '08', '09']
 		self.test_seq 	= ['04', '06', '07', '10']
@@ -37,7 +39,6 @@ class Parameters():
 		self.ts = 3
 
 		# Data info path
-		DeepVO_MISC_PATH = '/home/xenial/WS_Farid/DeepVO_misc/'
 		
 		self.train_df_path = '{}datainfo/train_df_t{}_v{}_p{}_seq{}x{}_sample{}.pickle'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.partition, self.seq_len[0], self.seq_len[1], self.ts)
