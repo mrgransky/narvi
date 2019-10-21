@@ -3,15 +3,15 @@ import os
 class Parameters():
 	def __init__(self):
 		self.n_processors = 8
-		self.data_dir =  'KITTI/'
 		
+		"""
+		self.data_dir =  'KITTI/'
 		self.image_dir = self.data_dir + 'images/'
 		self.pose_dir = self.data_dir + 'pose_GT/'
 		"""
-		self.data_dir 	=  '/home/xenial/Datasets/KITTI'
-		self.image_dir = self.data_dir + '/sequences/'
-		self.pose_dir 	= self.data_dir + '/poses/'
-		"""
+		self.data_dir 	=  '/home/alijani/Datasets/kitti_color'
+		self.image_dir = self.data_dir + 'images/'
+		self.pose_dir 	= self.data_dir + 'pose_GT/'
 		
 		self.train_seq = ['00', '01', '02', '05', '08', '09']
 		self.test_seq 	= ['04', '06', '07', '10']
