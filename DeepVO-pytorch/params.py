@@ -9,7 +9,7 @@ class Parameters():
 		self.image_dir = self.data_dir + 'images/'
 		self.pose_dir = self.data_dir + 'pose_GT/'
 		"""
-		self.data_dir 	=  '/home/alijani/Datasets/kitti_color'
+		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
 		self.image_dir = self.data_dir + 'images/'
 		self.pose_dir 	= self.data_dir + 'pose_GT/'
 		
