@@ -2,8 +2,8 @@
                                                                                             
 # GPU setup:
 #SBATCH -J FRD_GPU
-#SBATCH -o ./logs/output.txt
-#SBATCH -e ./logs/output.txt
+#SBATCH --output=./logs/output_%j.txt # STDOUT
+#SBATCH --error=./logs/output_%j.txt # STDOUT
 #SBATCH -n 1
 #SBATCH -c 1
 

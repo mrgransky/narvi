@@ -70,7 +70,7 @@ class Parameters():
 		self.resume = False #True  # resume training
 		self.resume_t_or_v = '.train'
 		
-		self.log_path = 'logs/'
+		#self.log_path = 'logs/'
 		self.load_model_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
 		
 		self.load_optimizer_path = 'models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer{}'.format(''.join(self.train_seq), ''.join(self.test_seq), self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), self.resume_t_or_v)
@@ -97,9 +97,10 @@ class Parameters():
 		if not os.path.isdir(os.path.dirname(self.train_df_path)):
 			os.makedirs(os.path.dirname(self.train_df_path))
 
+		"""
 		if not os.path.isdir(os.path.dirname(self.log_path)):
 			os.makedirs(os.path.dirname(self.log_path))
-
+		"""
 
 
 par = Parameters()
