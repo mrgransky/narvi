@@ -6,13 +6,12 @@
 #SBATCH --error=log_%a.txt
 
 #SBATCH --ntasks=1
-#SBATCH --cpu-per-task=1
+#SBATCH --cpus-per-task=1
 
 #SBATCH --mem=20000
 #SBATCH --time=5-05:50:00
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
-
 
 module load CUDA/9.0
 source activate py27
