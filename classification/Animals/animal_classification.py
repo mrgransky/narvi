@@ -56,7 +56,6 @@ class DogsVSCats():
                             self.catcount += 1
                         elif label == self.DOGS:
                             self.dogcount += 1
-
                     except Exception as e:
                         pass
                         #print(label, f, str(e))

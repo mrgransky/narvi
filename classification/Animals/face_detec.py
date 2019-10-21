@@ -1,6 +1,12 @@
-from __future__ import print_function, division
-import os
-import torch
+#######################################
+#IMPORTANT:
+	#DOWNLAOD DATASET:
+		#$ wget https://download.pytorch.org/tutorial/faces.zip
+		#$ unzip faces.zip # --->>>>>>>>>>>>>> in data/face
+		# run this code:
+#######################################
+
+import os, torch, sys
 import pandas as pd
 from skimage import io, transform
 import numpy as np
@@ -16,55 +22,53 @@ plt.ion()   # interactive mode
 
 landmarks_frame = pd.read_csv('data/faces/face_landmarks.csv')
 
-n = 65
-img_name = landmarks_frame.iloc[n, 0]
-landmarks = landmarks_frame.iloc[n, 1:].as_matrix()
-landmarks = landmarks.astype('float').reshape(-1, 2)
+n = 65 # img no 65
+img_name 	= landmarks_frame.iloc[n, 0]
+landmarks 	= landmarks_frame.iloc[n, 1:].as_matrix()
+landmarks 	= landmarks.astype('float').reshape(-1, 2)
 
-print('Image name: {}'.format(img_name))
-print('Landmarks shape: {}'.format(landmarks.shape))
-print('First 4 Landmarks:\n{}'.format(landmarks[:4]))
+print 'Img: {}, landmark shape: {}'.format(img_name, landmarks.shape)
+print 'First 4 Landmarks:\n{}'.format(landmarks[:4])
 
 
 def show_landmarks(image, landmarks):
     """Show image with landmarks"""
     plt.imshow(image)
     plt.scatter(landmarks[:, 0], landmarks[:, 1], s=10, marker='.', c='r')
-    plt.pause(0.001)  # pause a bit so that plots are updated
+    plt.pause(1)  # pause a bit so that plots are updated
 
 plt.figure()
 show_landmarks(io.imread(os.path.join('data/faces/', img_name)), landmarks)
 plt.show()
 
 class FaceLandmarksDataset(Dataset):
-    def __init__(self, csv_file, root_dir, transform=None):
-        self.landmarks_frame = pd.read_csv(csv_file)
-        self.root_dir = root_dir
-        self.transform = transform
+	def __init__(self, csv_file, root_dir, transform=None):
+		self.landmarks_frame = pd.read_csv(csv_file)
+		self.root_dir = root_dir
+		self.transform = transform
+		
+	def __len__(self):
+		return len(self.landmarks_frame)
 
-    def __len__(self):
-        return len(self.landmarks_frame)
-
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-
-        img_name = os.path.join(self.root_dir,
-                                self.landmarks_frame.iloc[idx, 0])
-        image = io.imread(img_name)
-        landmarks = self.landmarks_frame.iloc[idx, 1:]
-        landmarks = np.array([landmarks])
-        landmarks = landmarks.astype('float').reshape(-1, 2)
-        sample = {'image': image, 'landmarks': landmarks}
-
-        if self.transform:
-            sample = self.transform(sample)
-
-        return sample
-        
-        
+	def __getitem__(self, idx):
+		if torch.is_tensor(idx):
+			idx = idx.tolist()
+			
+		img_name 	= os.path.join(self.root_dir, self.landmarks_frame.iloc[idx, 0])
+		image 		= io.imread(img_name)
+		landmarks 	= self.landmarks_frame.iloc[idx, 1:]
+		landmarks 	= np.array([landmarks])
+		landmarks 	= landmarks.astype('float').reshape(-1, 2)
+		sample = {'image': image, 'landmarks': landmarks}
+		
+		if self.transform:
+			sample = self.transform(sample)
+		
+		return sample
+		  
 face_dataset = FaceLandmarksDataset(csv_file='data/faces/face_landmarks.csv',
                                     root_dir='data/faces/')
+print "face_dataset len :{}".format(len(face_dataset))
 
 fig = plt.figure()
 
@@ -87,16 +91,7 @@ for i in range(len(face_dataset)):
 #transformed_sample = tsfm(sample)
 
 
-
 class Rescale(object):
-    """Rescale the image in a sample to a given size.
-
-    Args:
-        output_size (tuple or int): Desired output size. If tuple, output is
-            matched to output_size. If int, smaller of image edges is matched
-            to output_size keeping aspect ratio the same.
-    """
-
     def __init__(self, output_size):
         assert isinstance(output_size, (int, tuple))
         self.output_size = output_size
@@ -123,15 +118,7 @@ class Rescale(object):
 
         return {'image': img, 'landmarks': landmarks}
 
-
 class RandomCrop(object):
-    """Crop randomly the image in a sample.
-
-    Args:
-        output_size (tuple or int): Desired output size. If int, square crop
-            is made.
-    """
-
     def __init__(self, output_size):
         assert isinstance(output_size, (int, tuple))
         if isinstance(output_size, int):
@@ -149,8 +136,7 @@ class RandomCrop(object):
         top = np.random.randint(0, h - new_h)
         left = np.random.randint(0, w - new_w)
 
-        image = image[top: top + new_h,
-                      left: left + new_w]
+        image = image[top: top + new_h, left: left + new_w]
 
         landmarks = landmarks - [left, top]
 
@@ -158,18 +144,11 @@ class RandomCrop(object):
 
 
 class ToTensor(object):
-    """Convert ndarrays in sample to Tensors."""
-
-    def __call__(self, sample):
-        image, landmarks = sample['image'], sample['landmarks']
-
-        # swap color axis because
-        # numpy image: H x W x C
-        # torch image: C X H X W
-        image = image.transpose((2, 0, 1))
-        return {'image': torch.from_numpy(image),
-                'landmarks': torch.from_numpy(landmarks)}
-
+	def __call__(self, sample):
+		image, landmarks = sample['image'], sample['landmarks']
+		# swap: numpy image: H x W x C --->>> torch image: C X H X W
+		image = image.transpose((2, 0, 1))
+		return {'image': torch.from_numpy(image),'landmarks': torch.from_numpy(landmarks)}
 
 scale = Rescale(256)
 crop = RandomCrop(128)
@@ -179,12 +158,12 @@ composed = transforms.Compose([Rescale(256), RandomCrop(224)])
 fig = plt.figure()
 sample = face_dataset[65]
 for i, tsfrm in enumerate([scale, crop, composed]):
-    transformed_sample = tsfrm(sample)
-
-    ax = plt.subplot(1, 3, i + 1)
-    plt.tight_layout()
-    ax.set_title(type(tsfrm).__name__)
-    show_landmarks(**transformed_sample)
+	print "i {}, tsfrm {} ".format(i, tsfrm)
+	transformed_sample = tsfrm(sample)
+	ax = plt.subplot(1, 3, i + 1)
+	plt.tight_layout()
+	ax.set_title(type(tsfrm).__name__)
+	show_landmarks(**transformed_sample)
 
 plt.show()
 
