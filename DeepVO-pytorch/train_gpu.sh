@@ -6,7 +6,7 @@
 #SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_train_%j.txt
 #SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_train_%j.txt
 
-#SBATCH --ntasks=1
+#SBATCH --ntasks=2
 #SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=16384M
@@ -20,7 +20,11 @@ source activate py27
 PYTHONDONTWRITEBYTECODE=True
 export PYTHONDONTWRITEBYTECODE 
 srun clear
+
+srun echo ""
 srun echo "BATCH GPU ...!"
+srun echo ""
+
 now="$(date)"
 CWD="$(pwd)"
 

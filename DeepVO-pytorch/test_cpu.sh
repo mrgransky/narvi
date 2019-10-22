@@ -18,7 +18,11 @@ source activate py27
 PYTHONDONTWRITEBYTECODE=True
 export PYTHONDONTWRITEBYTECODE 
 srun clear
+
+srun echo ""
 srun echo "BATCH CPU ...!"
+srun echo ""
+
 now="$(date)"
 CWD="$(pwd)"
 
