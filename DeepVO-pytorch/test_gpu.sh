@@ -3,10 +3,10 @@
 # GPU setup:
 #SBATCH -J FRD_GPU
 
-#SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_test_%j_a.txt
-#SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_test_%j_a.txt
+#SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_test_%j_%a.txt
+#SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_test_%j_%a.txt
 
-#SBATCH --ntasks=8
+#SBATCH --ntasks=2
 #SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=16384M

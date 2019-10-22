@@ -196,5 +196,7 @@ for ep in range(par.epochs):
 		print('Save model at ep {}, mean of train loss: {}'.format(ep+1, loss_mean))
 		torch.save(net.state_dict(), 	par.save_model_path		+ '.train')
 		torch.save(optimizer.state_dict(), 	par.save_optimzer_path	+ '.train')
-	
+	print "=" * 50
+	print "DONE!"
+	print "=" * 50
 	f.close()

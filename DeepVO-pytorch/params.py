@@ -4,14 +4,13 @@ from datetime import datetime
 class Parameters():
 	def __init__(self):
 		self.n_processors = multiprocessing.cpu_count()
-		
+		"""
 		# local machine:
 		self.data_dir 		=  '/home/xenial/Datasets/KITTI/'
 		"""
 		
 		# server machine:
 		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
-		"""
 		
 		now = datetime.now() # current date and time
 		date_time = now.strftime("%d%m%Y%H%M%S")
@@ -62,7 +61,7 @@ class Parameters():
 		self.batch_norm = True
 		
 		# Training
-		self.epochs = 250 #250
+		self.epochs = 1 #250
 		self.batch_size = 8
 		self.pin_mem = True
 		self.optim = {'opt': 'Adagrad', 'lr': 5e-4}
