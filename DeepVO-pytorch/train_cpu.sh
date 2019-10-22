@@ -2,8 +2,8 @@
                                                                                             
 # CPU setup:
 #SBATCH -J FRD_CPU
-#SBATCH -o cpu_train_%j.txt
-#SBATCH -e cpu_train_%j.txt
+#SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j.txt
+#SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j.txt
 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -16,6 +16,7 @@ source activate py27
 
 PYTHONDONTWRITEBYTECODE=True
 export PYTHONDONTWRITEBYTECODE 
+
 srun clear
 srun echo "BATCH CPU ...!"
 now="$(date)"

@@ -7,7 +7,7 @@ from params import par
 from model import DeepVO
 from data_helper import generate_data, SortedRandomBatchSampler, LoadMyDataset, get_partition_data_info
 
-print platform.sys.version
+print "\n\nPython INFO:\n{}".format(platform.sys.version)
 
 if torch.cuda.is_available():
 	device = torch.device("cuda:0")
