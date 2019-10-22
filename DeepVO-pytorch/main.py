@@ -10,14 +10,14 @@ from data_helper import generate_data, SortedRandomBatchSampler, LoadMyDataset, 
 print "\n\nPython INFO:\n{}".format(platform.sys.version)
 
 if torch.cuda.is_available():
-	device = torch.device("cuda:0")
-	use_cuda = True
+	#device = torch.device("cuda:0")
+	#use_cuda = True
 	print "#" * 50
 	print "\t\tRunning on GPU ..."
 	print "#" * 50
 else:
-	device = torch.device("cpu")
-	use_cuda = False
+	#device = torch.device("cpu")
+	#use_cuda = False
 	print "#" * 50
 	print "\t\tRunning on CPU ..."
 	print "#" * 50
@@ -75,16 +75,16 @@ valid_dl = DataLoader(testSET, batch_sampler=valid_sampler, num_workers=par.n_pr
 print "Testing dataset with {} samples".format(len(valid_df.index))
 
 # Model
-net = DeepVO(par.img_h, par.img_w, par.batch_norm).to(device)
-#print "\n\nModel Summary:\n{}".format(net)
-if use_cuda:
+net = DeepVO(par.img_h, par.img_w, par.batch_norm).to(par.device)
+print "\n\nModel Summary:\n{}".format(net)
+if par.use_cuda:
 	print('CUDA used.')
 	net = net.cuda()
 
 # Load FlowNet weights pretrained with FlyingChairs
 # NOTE: the pretrained model assumes image rgb values in range [-0.5, 0.5]
 if par.pretrained_flownet and not par.model_available:
-	if use_cuda:
+	if par.use_cuda:
 		pretrained_dict = torch.load(par.pretrained_flownet)
 	else:
 		pretrained_dict = torch.load(par.pretrained_flownet, map_location='cpu')
@@ -118,7 +118,7 @@ if par.model_available:
 	print "\nTrying to Load ...\n\nmodel: {}\n\noptimizer:{}".format(par.load_model_path,
 																							par.load_optimizer_path) 
 	try:
-		if use_cuda:
+		if par.use_cuda:
 			#net.load_state_dict(torch.load(par.load_model_path))		
 			net.load_state_dict(torch.load(par.load_model_path))
 			optimizer.load_state_dict(torch.load(par.load_optimizer_path))
@@ -144,7 +144,7 @@ for ep in range(par.epochs):
 		print "\nEpoch {}/{}".format(ep + 1, par.epochs)
 		print "\nidx = {}\tt_x = {}\tty = {}".format(idx, t_x.shape, t_y.shape)
 		print('-'*100)
-		if use_cuda:
+		if par.use_cuda:
 			t_x = t_x.cuda(non_blocking=par.pin_mem)
 			t_y = t_y.cuda(non_blocking=par.pin_mem)
 
@@ -165,7 +165,7 @@ for ep in range(par.epochs):
 	v_loss_list = []
 	#for _, v_x, v_y in valid_dl:
 	for idx, v_x, v_y in tqdm(valid_dl):
-		if use_cuda:
+		if par.use_cuda:
 			v_x = v_x.cuda(non_blocking=par.pin_mem)
 			v_y = v_y.cuda(non_blocking=par.pin_mem)
 			

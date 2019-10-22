@@ -1,18 +1,17 @@
-import os, multiprocessing, time
+import os, multiprocessing, time, torch
 from datetime import datetime
 
 class Parameters():
 	def __init__(self):
 		self.n_processors = multiprocessing.cpu_count()
 		
-		"""
 		# local machine:
 		self.data_dir 		=  '/home/xenial/Datasets/KITTI/'
 		"""
 		
 		# server machine:
 		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
-		
+		"""
 		
 		now = datetime.now() # current date and time
 		date_time = now.strftime("%d%m%Y%H%M%S")
@@ -125,4 +124,12 @@ class Parameters():
 		if not os.path.isdir(os.path.dirname(self.save_dir)):
 			os.makedirs(os.path.dirname(self.save_dir))
 		
+		
+		if torch.cuda.is_available():
+			self.device = torch.device("cuda:0")
+			self.use_cuda = True
+		else:
+			self.device = torch.device("cpu")
+			self.use_cuda = False
+
 par = Parameters()

@@ -9,15 +9,16 @@ from torch.utils.data import DataLoader
 from helper import eulerAnglesToRotationMatrix
 sys.dont_write_bytecode = True
 
+
 if torch.cuda.is_available():
-	device = torch.device("cuda:0")
-	use_cuda = True
+	#device = torch.device("cuda:0")
+	#use_cuda = True
 	print "#" * 50
 	print "\t\tRunning on GPU ..."
 	print "#" * 50
 else:
-	device = torch.device("cpu")
-	use_cuda = False
+	#device = torch.device("cpu")
+	#use_cuda = False
 	print "#" * 50
 	print "\t\tRunning on CPU ..."
 	print "#" * 50
@@ -29,7 +30,7 @@ if __name__ == '__main__':
 	print "Loading model:\t{}".format(par.load_model_path)
 	#M_deepvo.to(device)
 	try:
-		if use_cuda:
+		if par.use_cuda:
 			M_deepvo = M_deepvo.cuda()
 			M_deepvo.load_state_dict(torch.load(par.load_model_path))
 		else:
@@ -82,7 +83,7 @@ if __name__ == '__main__':
 			#print('{} / {}'.format(i, n_batch), end='\r', flush=True)
 			print "\n{}/{}".format(i, n_batch)
 			_, x, y = batch
-			if use_cuda:
+			if par.use_cuda:
 				x = x.cuda()
 				y = y.cuda()
 			batch_predict_pose = M_deepvo.forward(x)

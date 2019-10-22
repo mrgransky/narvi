@@ -2,8 +2,8 @@
                                                                                             
 # CPU setup:
 #SBATCH -J FRD_CPU
-#SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j.txt
-#SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j.txt
+#SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j_a.txt
+#SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/cpu_train_%j_a.txt
 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
