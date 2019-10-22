@@ -7,7 +7,7 @@
 #SBATCH -e gpu_test_%j.txt
 
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=32768M
 #SBATCH --time=5-05:50:00
@@ -16,6 +16,8 @@
 
 module load CUDA/9.0
 source activate py27
+PYTHONDONTWRITEBYTECODE=True
+export PYTHONDONTWRITEBYTECODE 
 srun clear
 srun echo "BATCH GPU ...!"
 now="$(date)"
@@ -41,9 +43,6 @@ idx=0
 } < <(nvidia-smi --query-gpu=memory.free --format=csv)
 
 srun echo "Maximum memory seen is $max_mem, at processor $idx"
-
-python -V
-srun echo "#######################################"
 
 python test.py
 srun echo "#######################################"

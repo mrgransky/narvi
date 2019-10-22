@@ -7,7 +7,7 @@
 #SBATCH -e cpu_test_%j.txt
 
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=32768M
 #SBATCH --time=5-05:50:00
@@ -15,6 +15,8 @@
 
 source activate py27
 
+PYTHONDONTWRITEBYTECODE=True
+export PYTHONDONTWRITEBYTECODE 
 srun clear
 srun echo "BATCH CPU ...!"
 now="$(date)"
@@ -24,8 +26,6 @@ srun echo "cur_dir: $CWD"
 srun echo "home_dir: $HOME"
 srun echo "Time: $now"
 
-python -V
-srun echo "#######################################"
 
 python test.py
 srun echo "#######################################"

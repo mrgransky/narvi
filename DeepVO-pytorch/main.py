@@ -1,4 +1,4 @@
-import torch, os, time, sys
+import torch, os, time, sys, platform
 from tqdm import tqdm 
 from torch.utils.data import DataLoader
 import numpy as np
@@ -7,6 +7,7 @@ from params import par
 from model import DeepVO
 from data_helper import generate_data, SortedRandomBatchSampler, LoadMyDataset, get_partition_data_info
 
+print platform.sys.version
 
 if torch.cuda.is_available():
 	device = torch.device("cuda:0")

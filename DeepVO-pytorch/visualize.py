@@ -6,7 +6,8 @@ import numpy as np
 import time
 from params import par
 
-predicted_result_dir = './result/'
+predicted_result_dir = par.save_dir
+
 gradient_color = True
 
 def plot_route(gt, out, c_gt='g', c_out='r'):

@@ -1,4 +1,5 @@
-import os, multiprocessing
+import os, multiprocessing, time
+from datetime import datetime
 
 class Parameters():
 	def __init__(self):
@@ -13,9 +14,16 @@ class Parameters():
 		self.data_dir 	=  '/home/alijani/Datasets/kitti_color/'
 		
 		
-		DeepVO_MISC_PATH 	= self.data_dir + 'DeepVO_misc/'
+		now = datetime.now() # current date and time
+		date_time = now.strftime("%d%m%Y%H%M%S")
+		#util_path 	= self.data_dir + 'DeepVO_misc/'
+		util_path 	= '{}DeepVO_misc/{}/'.format(self.data_dir, int(date_time))
+		MODEL_PATH = '{}DeepVO_misc/'.format(self.data_dir)
+		
 		self.image_dir 	= self.data_dir + 'images/'
 		self.pose_dir 		= self.data_dir + 'pose_GT/'
+		self.save_dir = '{}result/'.format(util_path)
+		
 		
 		
 		self.train_seq = ['00', '01', '02', '05', '08', '09']
@@ -40,10 +48,10 @@ class Parameters():
 
 		# Data info path
 		
-		self.train_df_path = '{}datainfo/train_df_t{}_v{}_p{}_seq{}x{}_sample{}.pickle'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.train_df_path = '{}datainfo/train_df_t{}_v{}_p{}_seq{}x{}_sample{}.pickle'.format(util_path, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.partition, self.seq_len[0], self.seq_len[1], self.ts)
 		
-		self.test_df_path  = '{}datainfo/valid_df_t{}_v{}_p{}_seq{}x{}_sample{}.pickle'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.test_df_path  = '{}datainfo/valid_df_t{}_v{}_p{}_seq{}x{}_sample{}.pickle'.format(util_path, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.partition, self.seq_len[0], self.seq_len[1], self.ts)
 		
 		# Model
@@ -55,7 +63,7 @@ class Parameters():
 		self.batch_norm = True
 		
 		# Training
-		self.epochs = 30 #250
+		self.epochs = 15 #250
 		self.batch_size = 8
 		self.pin_mem = True
 		self.optim = {'opt': 'Adagrad', 'lr': 5e-4}
@@ -75,33 +83,31 @@ class Parameters():
 		self.resume_t_or_v = '.train'
 		
 		
-		self.load_model_path 		= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model{}'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.load_model_path 		= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model{}'.format(MODEL_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
 																														self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], 
 																														self.batch_size, self.rnn_hidden_size, 
 																														'_'.join([k+str(v) for k, v in self.optim.items()]), 
 																														self.resume_t_or_v)
 		
-		self.load_optimizer_path 	= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer{}'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.load_optimizer_path 	= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer{}'.format(MODEL_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], self.batch_size, 
 																															self.rnn_hidden_size, '_'.join([k+str(v) for k, v in self.optim.items()]), 
 																															self.resume_t_or_v)
 
-		self.record_path 				= '{}records/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.txt'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.record_path 				= '{}records/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.txt'.format(util_path, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], 
 																															self.batch_size, self.rnn_hidden_size, 
 																															'_'.join([k+str(v) for k, v in self.optim.items()]))
 		
-		self.save_model_path 		= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.save_model_path 		= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.model'.format(MODEL_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], 
 																															self.batch_size, self.rnn_hidden_size, 
 																															'_'.join([k+str(v) for k, v in self.optim.items()]))
 		
-		self.save_optimzer_path 	= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer'.format(DeepVO_MISC_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
+		self.save_optimzer_path 	= '{}models/t{}_v{}_im{}x{}_s{}x{}_b{}_rnn{}_{}.optimizer'.format(MODEL_PATH, ''.join(self.train_seq), ''.join(self.test_seq), 
 																															self.img_h, self.img_w, self.seq_len[0], self.seq_len[1], 
 																															self.batch_size, self.rnn_hidden_size, 
 																															'_'.join([k+str(v) for k, v in self.optim.items()]))
-		
-		self.save_dir = '{}result/'.format(DeepVO_MISC_PATH)
 		
 		
 		if not os.path.isdir(os.path.dirname(self.record_path)):
