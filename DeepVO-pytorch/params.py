@@ -15,14 +15,13 @@ class Parameters():
 		now = datetime.now() # current date and time
 		date_time = now.strftime("%d%m%Y%H%M%S")
 		#util_path 	= self.data_dir + 'DeepVO_misc/'
-		util_path 	= '{}DeepVO_misc/{}/'.format(self.data_dir, int(date_time))
-		MODEL_PATH = '{}DeepVO_misc/'.format(self.data_dir)
+		#util_path 	= '{}DeepVO_misc/{}/'.format(self.data_dir, int(date_time))
+		util_path 	= '{}DeepVO_misc/'.format(self.data_dir)
+		MODEL_PATH 	= '{}DeepVO_misc/'.format(self.data_dir)
 		
 		self.image_dir 	= self.data_dir + 'images/'
 		self.pose_dir 		= self.data_dir + 'pose_GT/'
 		self.save_dir = '{}result/'.format(util_path)
-		
-		
 		
 		self.train_seq = ['00', '01', '02', '05', '08', '09']
 		self.test_seq 	= ['04', '06', '07', '10']

@@ -6,10 +6,10 @@
 #SBATCH -o /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_train_%j_%a.txt
 #SBATCH -e /home/alijani/Datasets/kitti_color/DeepVO_misc/logs/gpu_train_%j_%a.txt
 
-#SBATCH --ntasks=4
+#SBATCH --ntasks=2
 #SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
-#SBATCH --mem-per-cpu=16384M
+#SBATCH --mem-per-cpu=32768M #16384M #12288M #8192M
 #SBATCH --time=5-05:50:00
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
@@ -56,5 +56,11 @@ srun echo "#######################################"
 python test.py
 srun echo "#######################################"
 srun echo "python test.py with GPU DONE!"
+srun echo "#######################################"
+
+
+python visualize.py
+srun echo "#######################################"
+srun echo "python visualize.py with GPU DONE!"
 srun echo "#######################################"
 
